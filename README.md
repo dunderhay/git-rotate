@@ -18,6 +18,8 @@ The project is divided into three components; the `kicker`, the `sprayer`, and t
 
 - The `Target` can be any login endpoint you are performing password spraying against or whenever you are brute-forcing something and wanting to avoid IP-based blocking.
 
+![overview](/images/overview.png)
+
 # Getting Started
 
 ## Sprayer
