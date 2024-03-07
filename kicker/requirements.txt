@@ -1,0 +1,8 @@
+certifi
+cffi
+charset-normalizer
+idna
+pycparser
+PyNaCl
+requests
+urllib3

@@ -1,0 +1,17 @@
+example.com {
+    header {
+        -Server
+    }
+
+    @notWowAmazing {
+        not path /wow-amazing
+    }
+
+    handle @notWowAmazing {
+        respond "Not Found" 404
+    }
+
+    handle {
+        reverse_proxy localhost:5000
+    }
+}

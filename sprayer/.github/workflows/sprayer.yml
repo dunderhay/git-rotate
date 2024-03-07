@@ -1,0 +1,24 @@
+name: Sprayer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+      - name: Run script
+        run: python sprayer.py
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          CATCHERURL: ${{ secrets.CATCHERURL }} 
+          CATCHERTLS: ${{ secrets.CATCHERTLS }}  
+      
