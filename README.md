@@ -149,7 +149,7 @@ python3 kicker.py -u user-list.txt -p "Password123" -c http://example.com/wow-am
 
 # Demo
 
-[![demo](https://img.youtube.com/vi/sxo5E6n-T9o/0.jpg)](https://www.youtube.com/watch?v=sxo5E6n-T9o)
+[![demo](https://img.youtube.com/vi/Uvldz3ruLxA/0.jpg)](https://www.youtube.com/watch?v=Uvldz3ruLxA)
 
 
 # Acknowledgements
