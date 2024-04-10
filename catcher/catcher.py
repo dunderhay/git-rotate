@@ -38,7 +38,7 @@ def process_response(username, password, response_code, response):
             # Standard invalid password
             log_message(
                 f"[*] Valid user, but invalid password {username} : {password}",
-                color=Fore.YELLOW,
+                color=Fore.CYAN,
             )
         elif "AADSTS50055" in response:
             # User password is expired
@@ -46,49 +46,72 @@ def process_response(username, password, response_code, response):
                 f"[+] {username} : {password} - NOTE: The user's password is expired.",
                 color=Fore.GREEN,
             )
-        elif "AADSTS50079" in response or "AADSTS50076" in response:
+        elif "AADSTS50079" in response:
+            # Microsoft MFA required but not configured
+            log_message(
+                f"[+] {username} : {password} - NOTE: MFA required but not configured yet.",
+                color=Fore.GREEN,
+            )
+        elif "AADSTS53004" in response:
+            # User should register for multifactor authentication
+            log_message(
+                f"[+] {username} : {password} - NOTE: User needs to complete the MFA registration process.",
+                color=Fore.GREEN,
+            )
+        elif "AADSTS50076" in response:
             # Microsoft MFA response
             log_message(
                 f"[+] {username} : {password} - NOTE: The response indicates MFA (Microsoft) is in use.",
-                color=Fore.GREEN,
+                color=Fore.YELLOW,
             )
         elif "AADSTS50158" in response:
             # Conditional Access response (Based off of limited testing this seems to be the repsonse to DUO MFA)
             log_message(
                 f"[+] {username} : {password} - NOTE: Conditional access policy (MFA: DUO or other) is in use.",
-                color=Fore.GREEN,
+                color=Fore.YELLOW,
             )
         elif "AADSTS53003" in response:
             # Conditional Access response - access policy blocks token issuance
             log_message(
                 f"[+] {username} : {password} - NOTE: Conditional access policy is in place and blocks token issuance.",
-                color=Fore.GREEN,
+                color=Fore.YELLOW,
             )
         elif "AADSTS53000" in response:
             # Conditional Access response - access policy requires a compliant device
             log_message(
                 f"[+] {username} : {password} - NOTE: Conditional access policy is in place and requires a compliant device, and the device isn't compliant.",
-                color=Fore.GREEN,
+                color=Fore.YELLOW,
             )
         elif "AADSTS530035" in response:
             # Access block by security defaults
             log_message(
                 f"[+] {username} : {password} - NOTE: Access has been blocked by security defaults. The request is deemed unsafe by security defaults policies",
-                color=Fore.GREEN,
+                color=Fore.YELLOW,
             )
         elif "AADSTS50128" in response or "AADSTS50059" in response:
             # Invalid Tenant Response
             log_message(
                 f"[-] Tenant for account {username} doesn't exist. Check the domain to make sure they are using Azure/O365 services.",
-                color=Fore.YELLOW,
+                color=Fore.RED,
             )
         elif "AADSTS50034" in response:
             # Invalid Username
             log_message(
                 f"[-] The user {username} doesn't exist.",
-                color=Fore.YELLOW,
+                color=Fore.RED,
             )
-
+        elif "AADSTS500011" in response:
+            # Invalid resource name
+            log_message(
+                f"[!] The resource principal named was not found in the tenant named.",
+                color=Fore.RED,
+            )
+        elif "AADSTS700016" in response:
+            # Invalid application client ID
+            log_message(
+                f"[!] The application wasn't found in the directory/tenant.",
+                color=Fore.RED,
+            )
         elif "AADSTS50053" in response:
             # Locked out account or Smart Lockout in place
             log_message(
@@ -104,7 +127,7 @@ def process_response(username, password, response_code, response):
         else:
             # Unknown errors
             log_message(
-                f"[*] Got an error we haven't seen yet for user {username}",
+                f"[!] Got an error we haven't seen yet for user {username}",
             )
             log_message(response)
 
