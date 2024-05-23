@@ -135,21 +135,42 @@ def process_response(username, password, response_code, response):
 @app.route("/wow-amazing", methods=["POST"])
 def handle_post_data():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    login_response_code = data.get("status_code")
-    login_response = data.get("response")
+    
+    # Check if data is a list of results
+    if isinstance(data, list):
+        for result in data:
+            username = result.get("username")
+            password = result.get("password")
+            login_response_code = result.get("status_code")
+            login_response = result.get("response")
 
-    # Start a new thread to process the response asynchronously
-    threading.Thread(
-        target=process_response,
-        args=(
-            username,
-            password,
-            login_response_code,
-            login_response,
-        ),
-    ).start()
+            # Start a new thread to process each response asynchronously
+            threading.Thread(
+                target=process_response,
+                args=(
+                    username,
+                    password,
+                    login_response_code,
+                    login_response,
+                ),
+            ).start()
+    else:
+        # Handle single result (fallback if data is not a list)
+        username = data.get("username")
+        password = data.get("password")
+        login_response_code = data.get("status_code")
+        login_response = data.get("response")
+
+        # Start a new thread to process the response asynchronously
+        threading.Thread(
+            target=process_response,
+            args=(
+                username,
+                password,
+                login_response_code,
+                login_response,
+            ),
+        ).start()
 
     result = {"message": "Data received and processed successfully"}
     return jsonify(result)

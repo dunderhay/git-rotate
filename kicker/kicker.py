@@ -34,7 +34,7 @@ def parse_arguments():
         "secrets:read\n"
         "secrets:write\n"
         "\nExample Usage:\n\n"
-        "python kicker.py -u userlist.txt -p Password123 --catcher http://127.0.0.1:5004/process_users\n"
+        "python kicker.py -u userlist.txt -p Password123 --catcher http://127.0.0.1:5004/process_users --batch-size 5\n"
         "python kicker.py -u userlist.txt -p Password123 --catcher https://127.0.0.1:5004/process_users --secure\n",
     )
     parser.add_argument(
@@ -61,6 +61,13 @@ def parse_arguments():
         default=False,
         action="store_true",
         help="Use this flag if the catcher web server uses TLS (default is False)",
+    )
+    parser.add_argument(
+        "-b",
+        "--batch-size",
+        type=int,
+        default=5,
+        help="Number of usernames to include in each batch sent to a Github Action worker (default is 5)",
     )
     return parser.parse_args()
 
@@ -184,23 +191,29 @@ def main():
 
     # Check if the user list file is empty or not found
     check_file(args.userlist, "User list")
+
     # List of usernames to iterate through
     usernames = [line.strip() for line in open(args.userlist)]
 
-    # Iterate through the usernames
-    for username in usernames:
-        # Update username secret
-        if not update_secret("username", username, public_key, key_id):
+    # Group usernames into batches (default is 5)
+    batch_size = args.batch_size
+    user_batches = [usernames[i:i + batch_size] for i in range(0, len(usernames), batch_size)]
+
+    # Iterate through the batches of usernames
+    for user_batch in user_batches:
+        username_list = ",".join(user_batch)
+        # Update username secret with batch
+        if not update_secret("usernames", username_list, public_key, key_id):
             print(
-                f"[-] Failed to update username secret for {username}. Exiting script."
+                f"[-] Failed to update usernames secret for batch {username_list}. Exiting script."
             )
             sys.exit(1)
 
         # Create a workflow dispatch event
-        create_workflow_dispatch(username, workflow_id)
+        create_workflow_dispatch(username_list, workflow_id)
 
-        # give the secret some time to update
-        time.sleep(3)
+        # Give the secret some time to update
+        time.sleep(10)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ jobs:
       - name: Run script
         run: python sprayer.py
         env:
-          USERNAME: ${{ secrets.USERNAME }}
+          USERNAMES: ${{ secrets.USERNAMES }}
           PASSWORD: ${{ secrets.PASSWORD }}
           CATCHERURL: ${{ secrets.CATCHERURL }} 
           CATCHERTLS: ${{ secrets.CATCHERTLS }}  
